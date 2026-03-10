@@ -3,7 +3,6 @@ import Image from "next/image"
 import { notFound } from "next/navigation"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
-import { FloatingPlaygroundButton } from "@/components/floating-playground-button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Maximize, MapPin, Calendar, Tag } from "lucide-react"
 import { getProjectBySlug } from "@/lib/api"
@@ -160,7 +159,6 @@ export default async function FloorPlanDetailPage({ params }: PageProps) {
       </div>
 
       <Footer />
-      <FloatingPlaygroundButton />
     </main>
   )
 }

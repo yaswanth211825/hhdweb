@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Search, Sparkles, ChevronDown } from "lucide-react"
+import { Wrench, Phone, ChevronDown } from "lucide-react"
 
 export function HeroSection() {
   const scrollToContent = () => {
@@ -29,20 +29,19 @@ export function HeroSection() {
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-8">
             <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
             <span className="text-sm font-medium text-primary">
-              Architectural Excellence Since 2014
+              Building Dreams with Quality Craftsmanship
             </span>
           </div>
 
           {/* Main Headline */}
           <h1 className="font-serif text-4xl md:text-5xl lg:text-7xl font-bold text-foreground leading-tight mb-6 text-balance">
-            Design Your Dream Home{" "}
-            <span className="text-primary">Before You Build It</span>
+            Welcome to <span className="text-primary">Happy Home Developers</span>
           </h1>
 
           {/* Subheadline */}
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed text-pretty">
-            Explore ready floor plans or generate your own in seconds. 
-            Transform your vision into architectural reality with our innovative tools.
+            We build more than structures — we build dreams. From residential homes to commercial projects,
+            renovations, and custom builds, our experienced team delivers reliable, on-time results.
           </p>
 
           {/* CTA Buttons */}
@@ -52,9 +51,9 @@ export function HeroSection() {
               size="lg"
               className="bg-accent hover:bg-accent/90 text-accent-foreground px-8 h-14 text-base"
             >
-              <Link href="/floor-plans">
-                <Search className="w-5 h-5 mr-2" />
-                Find Floor Plan
+              <Link href="/services">
+                <Wrench className="w-5 h-5 mr-2" />
+                Explore Services
               </Link>
             </Button>
             <Button
@@ -63,9 +62,9 @@ export function HeroSection() {
               variant="outline"
               className="px-8 h-14 text-base border-primary/20 hover:bg-primary/5"
             >
-              <Link href="/ai-playground">
-                <Sparkles className="w-5 h-5 mr-2" />
-                Design Your Own
+              <Link href="/contact">
+                <Phone className="w-5 h-5 mr-2" />
+                Quick Enquiry
               </Link>
             </Button>
           </div>

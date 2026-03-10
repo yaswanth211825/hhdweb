@@ -77,14 +77,26 @@ export interface EnquiryResponse {
   createdAt: string
 }
 
-// ─── Base URL (SSR uses Spring URL directly, browser uses Next rewrite) ───────
-const BASE =
-  typeof window === "undefined"
-    ? `${process.env.SPRING_API_URL ?? "http://localhost:8080"}/api`
-    : "/backend/api"
+// ─── Base URL (goes through Next.js rewrite proxy → Spring Boot) ──────────────
+const BASE = "/backend/api"
+
+function resolveApiBase() {
+  if (typeof window !== "undefined") {
+    return BASE
+  }
+
+  const serverOrigin =
+    process.env.NEXT_INTERNAL_ORIGIN ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    "http://localhost:3000"
+
+  return `${serverOrigin}${BASE}`
+}
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<ApiResponse<T>> {
-  const res = await fetch(`${BASE}${path}`, {
+  const apiBase = resolveApiBase()
+
+  const res = await fetch(`${apiBase}${path}`, {
     ...init,
     headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
     // Don't cache by default — keep it simple for Sprint 1
@@ -119,6 +131,23 @@ export async function getProjects(
   const qs = new URLSearchParams({ page: String(page), size: String(size) })
   if (categoryId) qs.set("categoryId", categoryId)
   return apiFetch<PagedResponse<ProjectSummary>>(`/projects?${qs}`)
+}
+
+export async function getAllProjects(categoryId?: string): Promise<ProjectSummary[]> {
+  const pageSize = 200
+  let page = 0
+  let last = false
+  const all: ProjectSummary[] = []
+
+  while (!last) {
+    const resp = await getProjects({ categoryId, page, size: pageSize })
+    const data = resp.data
+    all.push(...data.content)
+    last = data.last
+    page += 1
+  }
+
+  return all
 }
 
 export async function getProjectBySlug(slug: string): Promise<ProjectDetail> {

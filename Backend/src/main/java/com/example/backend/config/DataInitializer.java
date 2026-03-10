@@ -13,6 +13,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 /**
  * Seeds the database with sample floor plan projects on startup.
  * Runs only when the database is empty — safe to leave active in development.
@@ -33,21 +35,18 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (categoryRepository.count() > 0) {
-            log.info("DataInitializer: data already exists, skipping seed.");
-            return;
-        }
-
         log.info("DataInitializer: seeding database with floor plan data...");
 
-        Category residential = categoryRepository.save(
-                Category.builder()
-                        .name("Residential Floor Plans")
-                        .description("2BHK floor plan designs for residential sites of various dimensions and orientations")
-                        .build()
+        Category residential = categoryRepository.findAll().stream().findFirst().orElseGet(() ->
+                categoryRepository.save(
+                        Category.builder()
+                                .name("Residential Floor Plans")
+                                .description("2BHK floor plan designs for residential sites of various dimensions and orientations")
+                                .build()
+                )
         );
 
-        seedProject(residential,
+        seedProjectIfMissing(residential,
                 "40x50 West Facing 2BHK",
                 "40x50-west-facing-2bhk",
                 2000,
@@ -56,7 +55,7 @@ public class DataInitializer implements CommandLineRunner {
                 "40X50_WestFacing_2BHK.png"
         );
 
-        seedProject(residential,
+        seedProjectIfMissing(residential,
                 "40x60 North Facing 2BHK",
                 "40x60-north-facing-2bhk",
                 2400,
@@ -65,7 +64,7 @@ public class DataInitializer implements CommandLineRunner {
                 "40X60_NorthFacing_2BHK.png"
         );
 
-        seedProject(residential,
+        seedProjectIfMissing(residential,
                 "30x40 South Facing 2BHK",
                 "30x40-south-facing-2bhk",
                 1200,
@@ -74,7 +73,7 @@ public class DataInitializer implements CommandLineRunner {
                 "30X40_SouthFacing_2BHK.png"
         );
 
-        seedProject(residential,
+        seedProjectIfMissing(residential,
                 "20x40 West Facing 2BHK",
                 "20x40-west-facing-2bhk",
                 800,
@@ -83,11 +82,25 @@ public class DataInitializer implements CommandLineRunner {
                 "20X40_WestFacing_2BHK.png"
         );
 
-        log.info("DataInitializer: seeding complete — 1 category, 4 projects, 4 floor plan files added.");
+        seedProjectIfMissing(residential,
+                "30x50 East Facing 2BHK",
+                "30x50-east-facing-2bhk",
+                1500,
+                "Well-balanced 2BHK floor plan for a 30x50 east-facing site. " +
+                "Designed for morning sunlight, practical circulation, and comfortable family living.",
+                "30X50_EastFacing_2BHK.png"
+        );
+
+        log.info("DataInitializer: seeding complete — 1 category, 5 projects, 5 floor plan files added.");
     }
 
-    private void seedProject(Category category, String title, String slug,
-                              int areaSqft, String description, String fileName) {
+        private void seedProjectIfMissing(Category category, String title, String slug,
+                                                                          int areaSqft, String description, String fileName) {
+                Optional<Project> existing = projectRepository.findBySlug(slug);
+                if (existing.isPresent()) {
+                        return;
+                }
+
         String fileUrl = S3_BASE + fileName;
 
         Project project = projectRepository.save(

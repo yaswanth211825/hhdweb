@@ -4,7 +4,6 @@ import { use } from "react"
 import Link from "next/link"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
-import { FloatingPlaygroundButton } from "@/components/floating-playground-button"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -243,7 +242,6 @@ export default function ProjectDetailPage({ params }: PageProps) {
       </div>
 
       <Footer />
-      <FloatingPlaygroundButton />
     </main>
   )
 }

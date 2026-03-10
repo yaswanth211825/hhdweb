@@ -1,12 +1,11 @@
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
-import { FloatingPlaygroundButton } from "@/components/floating-playground-button"
 import { HeroSection } from "@/components/home/hero-section"
 import { TrustSection } from "@/components/home/trust-section"
 import { FeaturedProjects } from "@/components/home/featured-projects"
 import { VideoSection } from "@/components/home/video-section"
 import { DreamBuilderSection } from "@/components/home/dream-builder-section"
-import { AIPlaygroundPromo } from "@/components/home/ai-playground-promo"
+import { WhyChooseUsSection } from "@/components/home/why-choose-us-section"
 
 export default function HomePage() {
   return (
@@ -17,9 +16,8 @@ export default function HomePage() {
       <FeaturedProjects />
       <VideoSection />
       <DreamBuilderSection />
-      <AIPlaygroundPromo />
+      <WhyChooseUsSection />
       <Footer />
-      <FloatingPlaygroundButton />
     </main>
   )
 }

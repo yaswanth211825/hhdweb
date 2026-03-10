@@ -7,6 +7,7 @@ import com.example.backend.entity.Request;
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.repository.ProjectRepository;
 import com.example.backend.repository.RequestRepository;
+import com.example.backend.service.NotificationService;
 import com.example.backend.service.RequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ public class RequestServiceImpl implements RequestService {
 
     private final RequestRepository requestRepository;
     private final ProjectRepository projectRepository;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -40,6 +42,9 @@ public class RequestServiceImpl implements RequestService {
                 .build();
 
         Request saved = requestRepository.save(request);
+
+        // Fire-and-forget: sends email + appends Google Sheet row without blocking the response
+        notificationService.notifyNewRequest(saved);
 
         return new RequestResponse(
                 saved.getId(),

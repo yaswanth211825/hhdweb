@@ -30,16 +30,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Black Box Tests — GET /api/projects and GET /api/projects/{slug}
- * Uses standaloneSetup (no Spring context needed — only spring-test / MockMvc required).
+ *
+ * Covers:
+ *  - Project list: data present, empty, category filter, custom pagination
+ *  - Project detail: valid slug, unknown slug → 404
+ *  - Pagination: default page/size, custom page=1 size=5, page=0 size=20
+ *  - Service exception → 500
  */
 @ExtendWith(MockitoExtension.class)
 class ProjectControllerTest {
 
-    @Mock
-    private ProjectService projectService;
-
-    @InjectMocks
-    private ProjectController projectController;
+    @Mock  private ProjectService projectService;
+    @InjectMocks private ProjectController projectController;
 
     private MockMvc mockMvc;
 
@@ -51,16 +53,12 @@ class ProjectControllerTest {
                 .build();
     }
 
+    // ── list endpoint ─────────────────────────────────────────────────────────
+
     @Test
     @DisplayName("GET /api/projects → 200 with project list and success message")
     void getProjects_withData_returns200() throws Exception {
-        ProjectSummaryResponse summary = new ProjectSummaryResponse(
-                UUID.randomUUID(), "40x50 West Facing 2BHK", "40x50-west-facing-2bhk",
-                "Bangalore, Karnataka", 2000, 2024,
-                "https://happy-home-developers.s3.ap-south-2.amazonaws.com/Projects/floorplans/40X50_WestFacing_2BHK.png",
-                "ACTIVE", "Residential Floor Plans"
-        );
-        Page<ProjectSummaryResponse> page = new PageImpl<>(List.of(summary));
+        Page<ProjectSummaryResponse> page = new PageImpl<>(List.of(summaryResponse()));
         when(projectService.getProjects(isNull(), eq(0), eq(10))).thenReturn(page);
 
         mockMvc.perform(get("/api/projects"))
@@ -69,7 +67,9 @@ class ProjectControllerTest {
                 .andExpect(jsonPath("$.message").value("Projects fetched successfully"))
                 .andExpect(jsonPath("$.data.content[0].slug").value("40x50-west-facing-2bhk"))
                 .andExpect(jsonPath("$.data.content[0].areaSqft").value(2000))
-                .andExpect(jsonPath("$.data.content[0].categoryName").value("Residential Floor Plans"));
+                .andExpect(jsonPath("$.data.content[0].categoryName").value("Residential Floor Plans"))
+                .andExpect(jsonPath("$.data.totalElements").value(1))
+                .andExpect(jsonPath("$.data.last").value(true));
     }
 
     @Test
@@ -81,39 +81,49 @@ class ProjectControllerTest {
         mockMvc.perform(get("/api/projects"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("No projects found. Stay tuned for updates!"))
-                .andExpect(jsonPath("$.data.content").isEmpty());
+                .andExpect(jsonPath("$.data.content").isEmpty())
+                .andExpect(jsonPath("$.data.totalElements").value(0));
     }
 
     @Test
     @DisplayName("GET /api/projects?categoryId={id} → 200 filtered by category")
     void getProjects_withCategoryFilter_returns200() throws Exception {
         UUID categoryId = UUID.randomUUID();
-        ProjectSummaryResponse summary = new ProjectSummaryResponse(
-                UUID.randomUUID(), "30x40 South Facing 2BHK", "30x40-south-facing-2bhk",
-                "Bangalore, Karnataka", 1200, 2024, "https://example.com/img.png",
-                "ACTIVE", "Residential Floor Plans"
-        );
         when(projectService.getProjects(eq(categoryId), eq(0), eq(10)))
-                .thenReturn(new PageImpl<>(List.of(summary)));
+                .thenReturn(new PageImpl<>(List.of(summaryResponse())));
 
         mockMvc.perform(get("/api/projects").param("categoryId", categoryId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.content[0].slug").value("30x40-south-facing-2bhk"));
+                .andExpect(jsonPath("$.data.content[0].slug").value("40x50-west-facing-2bhk"));
     }
 
     @Test
-    @DisplayName("GET /api/projects/{slug} → 200 with project detail")
+    @DisplayName("GET /api/projects?page=1&size=5 → 200 with custom pagination forwarded to service")
+    void getProjects_customPaginationParams_passedToService() throws Exception {
+        when(projectService.getProjects(isNull(), eq(1), eq(5)))
+                .thenReturn(new PageImpl<>(Collections.emptyList()));
+
+        mockMvc.perform(get("/api/projects").param("page", "1").param("size", "5"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("GET /api/projects?page=0&size=20 → 200")
+    void getProjects_largerPageSize_returns200() throws Exception {
+        when(projectService.getProjects(isNull(), eq(0), eq(20)))
+                .thenReturn(new PageImpl<>(List.of(summaryResponse())));
+
+        mockMvc.perform(get("/api/projects").param("page", "0").param("size", "20"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.content").isArray());
+    }
+
+    // ── detail endpoint ───────────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("GET /api/projects/{slug} → 200 with full project detail")
     void getProjectBySlug_validSlug_returns200() throws Exception {
-        CategoryResponse category = new CategoryResponse(
-                UUID.randomUUID(), "Residential Floor Plans", "2BHK designs", LocalDateTime.now()
-        );
-        ProjectDetailResponse detail = new ProjectDetailResponse(
-                UUID.randomUUID(), "40x50 West Facing 2BHK", "40x50-west-facing-2bhk",
-                "Bangalore, Karnataka", 2000, 2024,
-                "Spacious 2BHK floor plan.", "https://example.com/img.png",
-                "ACTIVE", category, Collections.emptyList(), LocalDateTime.now()
-        );
-        when(projectService.getProjectBySlug("40x50-west-facing-2bhk")).thenReturn(detail);
+        when(projectService.getProjectBySlug("40x50-west-facing-2bhk")).thenReturn(detailResponse());
 
         mockMvc.perform(get("/api/projects/40x50-west-facing-2bhk"))
                 .andExpect(status().isOk())
@@ -126,7 +136,7 @@ class ProjectControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/projects/{slug} → 404 when slug not found (via GlobalExceptionHandler)")
+    @DisplayName("GET /api/projects/{slug} → 404 when slug not found")
     void getProjectBySlug_unknownSlug_returns404() throws Exception {
         when(projectService.getProjectBySlug("non-existent"))
                 .thenThrow(new ResourceNotFoundException("Project not found with slug: non-existent"));
@@ -136,5 +146,40 @@ class ProjectControllerTest {
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.statusCode").value(404))
                 .andExpect(jsonPath("$.message").value("Project not found with slug: non-existent"));
+    }
+
+    @Test
+    @DisplayName("GET /api/projects/{slug} → 500 when service throws RuntimeException")
+    void getProjectBySlug_serviceThrows_returns500() throws Exception {
+        when(projectService.getProjectBySlug(any()))
+                .thenThrow(new RuntimeException("Unexpected DB error"));
+
+        mockMvc.perform(get("/api/projects/some-slug"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.statusCode").value(500));
+    }
+
+    // ── helpers ───────────────────────────────────────────────────────────────
+
+    private ProjectSummaryResponse summaryResponse() {
+        return new ProjectSummaryResponse(
+                UUID.randomUUID(), "40x50 West Facing 2BHK", "40x50-west-facing-2bhk",
+                "Bangalore, Karnataka", 2000, 2024,
+                "https://happy-home-developers.s3.ap-south-2.amazonaws.com/img.png",
+                "ACTIVE", "Residential Floor Plans"
+        );
+    }
+
+    private ProjectDetailResponse detailResponse() {
+        CategoryResponse category = new CategoryResponse(
+                UUID.randomUUID(), "Residential Floor Plans", "2BHK designs", LocalDateTime.now()
+        );
+        return new ProjectDetailResponse(
+                UUID.randomUUID(), "40x50 West Facing 2BHK", "40x50-west-facing-2bhk",
+                "Bangalore, Karnataka", 2000, 2024,
+                "Spacious 2BHK floor plan.", "https://example.com/img.png",
+                "ACTIVE", category, Collections.emptyList(), LocalDateTime.now()
+        );
     }
 }

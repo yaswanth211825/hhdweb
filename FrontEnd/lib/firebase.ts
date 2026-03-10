@@ -1,8 +1,5 @@
-// Firebase client setup (to be filled with your project config).
-// 1. Create a Firebase project at https://console.firebase.google.com
-// 2. Enable Email/Password auth (and others you need) in Authentication.
-// 3. Create a Web App and copy the config values into environment variables.
-// 4. Add the env vars to .env.local:
+// Firebase client setup.
+// Add these to .env.local (get values from Firebase Console → Project Settings → Web App):
 //
 // NEXT_PUBLIC_FIREBASE_API_KEY=...
 // NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
@@ -11,10 +8,12 @@
 // NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
 // NEXT_PUBLIC_FIREBASE_APP_ID=...
 //
-// After that, we can replace the localStorage-based auth with real Firebase Auth.
+// In Firebase Console → Authentication → Sign-in method, enable:
+//   - Email/Password
+//   - Google
 
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app"
-import { getAuth, type Auth } from "firebase/auth"
+import { getAuth, GoogleAuthProvider, type Auth } from "firebase/auth"
 import { getFirestore, type Firestore } from "firebase/firestore"
 import { getStorage, type FirebaseStorage } from "firebase/storage"
 
@@ -63,5 +62,11 @@ export function getFirebaseStorage() {
     storage = getStorage(getFirebaseApp())
   }
   return storage
+}
+
+export function getGoogleAuthProvider() {
+  const provider = new GoogleAuthProvider()
+  provider.setCustomParameters({ prompt: "select_account" })
+  return provider
 }
 

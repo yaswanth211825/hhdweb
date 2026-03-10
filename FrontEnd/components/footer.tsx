@@ -13,11 +13,12 @@ export function Footer() {
                 <Home className="w-5 h-5 text-primary-foreground" />
               </div>
               <span className="font-serif text-xl font-semibold">
-                HappyHomeBuilders
+                Happy Home Developers
               </span>
             </Link>
             <p className="text-primary-foreground/70 text-sm leading-relaxed">
-              Design your dream home before you build it. Explore ready floor plans or generate your own in seconds.
+              We build more than structures — we build dreams. Residential, commercial, renovation,
+              and custom construction services with quality and reliability.
             </p>
           </div>
 
@@ -26,11 +27,12 @@ export function Footer() {
             <h3 className="font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-3">
               {[
+                { href: "/", label: "Home" },
+                { href: "/projects", label: "Projects" },
+                { href: "/contact", label: "Contact" },
                 { href: "/floor-plans", label: "Floor Plans" },
-                { href: "/ai-playground", label: "AI Playground" },
                 { href: "/gallery", label: "Gallery" },
                 { href: "/services", label: "Services" },
-                { href: "/projects", label: "Projects" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link
@@ -51,25 +53,25 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 mt-0.5 text-accent" />
                 <span className="text-primary-foreground/70 text-sm">
-                  123 Builder Street, Architecture City, AC 12345
+                  Bengaluru, Karnataka, India
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-accent" />
                 <a
-                  href="tel:+1234567890"
+                  href="tel:+919701665847"
                   className="text-primary-foreground/70 hover:text-primary-foreground text-sm transition-colors"
                 >
-                  +1 (234) 567-890
+                  +91 970 166 5847
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-accent" />
                 <a
-                  href="mailto:info@happyhomebuilders.com"
+                  href="mailto:happyhomedevelopers.in@gmail.com"
                   className="text-primary-foreground/70 hover:text-primary-foreground text-sm transition-colors"
                 >
-                  info@happyhomebuilders.com
+                  happyhomedevelopers.in@gmail.com
                 </a>
               </li>
             </ul>
@@ -89,7 +91,7 @@ export function Footer() {
                 <Instagram className="w-5 h-5" />
               </a>
               <a
-                href="https://youtube.com"
+                href="https://www.youtube.com/@happyhomedevelopers"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-primary-foreground/10 hover:bg-primary-foreground/20 rounded-lg flex items-center justify-center transition-colors"
@@ -98,7 +100,7 @@ export function Footer() {
                 <Youtube className="w-5 h-5" />
               </a>
               <a
-                href="https://wa.me/1234567890"
+                href="https://wa.me/919701665847"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-primary-foreground/10 hover:bg-primary-foreground/20 rounded-lg flex items-center justify-center transition-colors"
@@ -116,7 +118,7 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-primary-foreground/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-primary-foreground/60 text-sm">
-              © {new Date().getFullYear()} HappyHomeBuilders. All rights reserved.
+              © {new Date().getFullYear()} Happy Home Developers. All rights reserved.
             </p>
             <div className="flex gap-6">
               <Link

@@ -8,7 +8,7 @@ import { getProjects } from "@/lib/api"
 export async function FeaturedProjects() {
   let projects = []
   try {
-    const result = await getProjects({ size: 4 })
+    const result = await getProjects({ size: 5 })
     projects = result.data.content
   } catch {
     // Backend unavailable — render nothing (page still works)
@@ -24,15 +24,15 @@ export async function FeaturedProjects() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
           <div>
             <span className="text-sm font-medium text-accent uppercase tracking-wider">
-              Our Portfolio
+              Floor Plans from Database
             </span>
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mt-2">
-              Featured Projects
+              Featured Floor Plans
             </h2>
           </div>
           <Button asChild variant="outline" className="w-fit">
-            <Link href="/projects">
-              View All Projects
+            <Link href="/floor-plans">
+              View All Floor Plans
               <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
           </Button>

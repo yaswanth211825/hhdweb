@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
-import { FloatingPlaygroundButton } from "@/components/floating-playground-button"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -87,7 +86,7 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Phone</h3>
                     <p className="text-muted-foreground text-sm">
-                      Contact us via the form and we'll call you back.
+                      +91 970 166 5847
                     </p>
                   </div>
                 </div>
@@ -103,7 +102,7 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Email</h3>
                     <p className="text-muted-foreground text-sm">
-                      info@happyhomebuilders.com
+                      happyhomedevelopers.in@gmail.com
                     </p>
                   </div>
                 </div>
@@ -236,7 +235,6 @@ export default function ContactPage() {
       </div>
 
       <Footer />
-      <FloatingPlaygroundButton />
     </main>
   )
 }

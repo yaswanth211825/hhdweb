@@ -3,22 +3,22 @@ import { Building, Home, FileText, Award } from "lucide-react"
 const stats = [
   {
     icon: Award,
-    value: "15+",
-    label: "Years Experience",
+    value: "10+",
+    label: "Years of Experience",
   },
   {
     icon: Building,
-    value: "500+",
-    label: "Homes Built",
+    value: "250+",
+    label: "Projects Delivered",
   },
   {
     icon: FileText,
-    value: "1000+",
-    label: "Floor Plans Available",
+    value: "100+",
+    label: "Renovations Completed",
   },
   {
     icon: Home,
-    value: "100%",
+    value: "98%",
     label: "Client Satisfaction",
   },
 ]

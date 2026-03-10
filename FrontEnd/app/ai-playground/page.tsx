@@ -7,8 +7,8 @@ export default function AIPlaygroundPage() {
     <main className="min-h-screen pt-20">
       <Navbar />
       <UnderDevelopment
-        title="AI Playground"
-        description="Our AI-powered floor plan assistant — describe your plot and get instant plan suggestions — is coming in Sprint 3."
+        title="Construction Planning Tools"
+        description="More planning resources and customer tools are being prepared and will be available soon."
       />
       <Footer />
     </main>

@@ -6,7 +6,6 @@ import com.example.backend.dto.response.ProjectFileResponse;
 import com.example.backend.dto.response.ProjectSummaryResponse;
 import com.example.backend.entity.Category;
 import com.example.backend.entity.Project;
-import com.example.backend.enums.ProjectStatus;
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.repository.ProjectFileRepository;
 import com.example.backend.repository.ProjectRepository;
@@ -35,8 +34,8 @@ public class ProjectServiceImpl implements ProjectService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
         Page<Project> projects = (categoryId != null)
-                ? projectRepository.findByCategoryIdAndStatus(categoryId, ProjectStatus.ACTIVE, pageable)
-                : projectRepository.findAllByStatus(ProjectStatus.ACTIVE, pageable);
+                                ? projectRepository.findByCategoryId(categoryId, pageable)
+                                : projectRepository.findAll(pageable);
 
         return projects.map(this::toSummary);
     }
